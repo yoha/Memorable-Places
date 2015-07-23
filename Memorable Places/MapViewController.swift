@@ -14,6 +14,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     // MARK: - Stored Properties
     
     var locationDirector: CLLocationManager!
+    let mapCoordinateZoomLevel: CLLocationDegrees = 0.01
     
     // MARK: - IBOutlet properties
     
@@ -26,13 +27,31 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         self.locationDirector = CLLocationManager()
         self.locationDirector.delegate = self
         self.locationDirector.desiredAccuracy = kCLLocationAccuracyBest
-        self.locationDirector.requestWhenInUseAuthorization()
         self.locationDirector.pausesLocationUpdatesAutomatically = true
-        self.locationDirector.startUpdatingLocation()
+        if selectedAddress == 0 {
+            self.locationDirector.requestWhenInUseAuthorization()
+            self.locationDirector.startUpdatingLocation()
+        }
+        else {
+            let selectedAddressLatitude: CLLocationDegrees = Double(placesOfInterest[selectedAddress]["latitude"]!)!
+            let selectedAddressLongitude: CLLocationDegrees = NSString(string: placesOfInterest[selectedAddress]["longitude"]!).doubleValue
+            let latitudeDeltaZoomLevel: CLLocationDegrees = self.mapCoordinateZoomLevel
+            let longtitudeDeltaZoomLevel: CLLocationDegrees = self.mapCoordinateZoomLevel
+            let areaSpannedByMapRegion: MKCoordinateSpan = MKCoordinateSpanMake(latitudeDeltaZoomLevel, longtitudeDeltaZoomLevel)
+            let geographicalCoordiateStruct: CLLocationCoordinate2D = CLLocationCoordinate2DMake(selectedAddressLatitude, selectedAddressLongitude)
+            let mapRegionToDisplay: MKCoordinateRegion = MKCoordinateRegionMake(geographicalCoordiateStruct, areaSpannedByMapRegion)
+            self.mapView.setRegion(mapRegionToDisplay, animated: true)
+            
+            let userLocationAnnotation = MKPointAnnotation()
+            userLocationAnnotation.coordinate = geographicalCoordiateStruct
+            userLocationAnnotation.title = placesOfInterest[selectedAddress]["locationMainTitle"]
+            userLocationAnnotation.subtitle = placesOfInterest[selectedAddress]["locationSubTitle"]
+            self.mapView.addAnnotation(userLocationAnnotation)
+        }
         self.mapView.showsUserLocation = true
         
         let longPressAction = UILongPressGestureRecognizer(target: self, action: "executeLongPressAction:")
-        longPressAction.minimumPressDuration = 2.0
+        longPressAction.minimumPressDuration = 1.0
         self.mapView.addGestureRecognizer(longPressAction)
     }
 
@@ -46,8 +65,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [AnyObject]) {
         let userLocation = locations[0] as! CLLocation
         let userLocationCoordinate = CLLocationCoordinate2DMake(userLocation.coordinate.latitude, userLocation.coordinate.longitude)
-        let latitudeDelta: CLLocationDegrees = 0.01
-        let longitudeDelta: CLLocationDegrees = 0.01
+        let latitudeDelta: CLLocationDegrees = self.mapCoordinateZoomLevel
+        let longitudeDelta: CLLocationDegrees = self.mapCoordinateZoomLevel
         let userLocationSpan = MKCoordinateSpanMake(latitudeDelta, longitudeDelta)
         let userLocationRegion = MKCoordinateRegionMake(userLocationCoordinate, userLocationSpan)
         self.mapView.setRegion(userLocationRegion, animated: true)
@@ -59,14 +78,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         if gestureRecognizer.state == UIGestureRecognizerState.Began {
             let locationInViewUserTapsOn = gestureRecognizer.locationInView(self.mapView)
             let mapCoordinateFromViewCoordinate = self.mapView.convertPoint(locationInViewUserTapsOn, toCoordinateFromView: self.mapView)
-            
-//            // annotation 
-//            
-//            let userLocationAnnotation = MKPointAnnotation()
-//            userLocationAnnotation.coordinate = mapCoordinateFromViewCoordinate
-//            userLocationAnnotation.title = "Memorable place?"
-//            userLocationAnnotation.subtitle = "Mark it as such if it is."
-//            self.mapView.addAnnotation(userLocationAnnotation)
             
             // address conversion
             
@@ -90,11 +101,14 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
                         thoroughfare = poi.thoroughfare
                     }
                     else {
-                        pointAnnotationMainTitle = "Added \(NSDate())"
+                        pointAnnotationMainTitle = "Added \(NSDate())."
                     }
-                    pointAnnotationMainTitle = "\(subThoroughfare) \(thoroughfare)"
+                    pointAnnotationMainTitle = "\(subThoroughfare) \(thoroughfare)."
                     pointAnnotationSubTitle = "\(poi.subAdministrativeArea), \(poi.administrativeArea) \(poi.postalCode). \(poi.country)."
                 }
+                
+                // assigning the location info into a var in table view controller
+                placesOfInterest.append(["locationMainTitle":  "\(pointAnnotationMainTitle)", "locationSubTitle": "\(pointAnnotationSubTitle)", "latitude": "\(mapCoordinateFromViewCoordinate.latitude)", "longitude": "\(mapCoordinateFromViewCoordinate.longitude)"])
                 
                 // annotation
                 

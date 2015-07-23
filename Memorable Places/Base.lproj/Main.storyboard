@@ -24,6 +24,9 @@
                                     <animations/>
                                 </tableViewCellContentView>
                                 <animations/>
+                                <connections>
+                                    <segue destination="BYZ-38-t0r" kind="show" id="pyD-Lx-FwI"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -97,4 +100,7 @@
             <point key="canvasLocation" x="385" y="343"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="pyD-Lx-FwI"/>
+    </inferredMetricsTieBreakers>
 </document>

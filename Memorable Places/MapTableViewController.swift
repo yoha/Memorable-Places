@@ -8,16 +8,28 @@
 
 import UIKit
 
+// an array of dictionaries
+
+var placesOfInterest: [Dictionary<String,String>]!
+var selectedAddress = 0
+
 class MapTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        if placesOfInterest == nil {
+            placesOfInterest = [["locationMainTitle":  "23 N Santa Cruz Ave.", "locationSubTitle": "Los Gatos, CA 95030. United States.", "latitude": "37.223448", "longitude": "-121.983874"]]
+        }
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+         self.navigationItem.leftBarButtonItem = self.editButtonItem()
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(true)
+        self.tableView.reloadData()
     }
 
     override func didReceiveMemoryWarning() {
@@ -28,57 +40,52 @@ class MapTableViewController: UITableViewController {
     // MARK: - Table view data source
 
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
         return 1
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return 3
+        return placesOfInterest.count
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("reusableCell", forIndexPath: indexPath)
-
-        cell.textLabel?.text = "hello"
+        cell.textLabel?.font = UIFont.systemFontOfSize(16)
+        cell.textLabel?.numberOfLines = 2
+        let mainTitle = placesOfInterest[indexPath.row]["locationMainTitle"]!
+        let subTitle = placesOfInterest[indexPath.row]["locationSubTitle"]!
+        cell.textLabel?.text = mainTitle + "\n" + subTitle
 
         return cell
     }
 
-    /*
-    // Override to support conditional editing of the table view.
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         // Return false if you do not want the specified item to be editable.
         return true
     }
-    */
 
-    /*
-    // Override to support editing the table view.
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
             // Delete the row from the data source
+            placesOfInterest.removeAtIndex(indexPath.row)
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
         } else if editingStyle == .Insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }    
     }
-    */
-
-    /*
-    // Override to support rearranging the table view.
+    
     override func tableView(tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
 
     }
-    */
 
-    /*
-    // Override to support conditional rearranging of the table view.
     override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         // Return NO if you do not want the item to be re-orderable.
         return true
     }
-    */
+    
+    override func tableView(tableView: UITableView, willSelectRowAtIndexPath indexPath: NSIndexPath) -> NSIndexPath? {
+        selectedAddress = indexPath.row
+        return indexPath
+    }
 
     /*
     // MARK: - Navigation
