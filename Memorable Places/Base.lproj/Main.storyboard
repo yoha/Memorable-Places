@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="8121.17" systemVersion="15A215h" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="8bo-7U-llD">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="8121.17" systemVersion="15A225f" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="8bo-7U-llD">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8101.14"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
-        <!--Map Table View Controller-->
+        <!--My Memorable Places-->
         <scene sceneID="wLB-cj-2zQ">
             <objects>
                 <tableViewController id="XWM-hW-eWc" customClass="MapTableViewController" customModule="Memorable_Places" customModuleProvider="target" sceneMemberID="viewController">
@@ -31,7 +31,7 @@
                             <outlet property="delegate" destination="XWM-hW-eWc" id="9PC-Qe-Yfy"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="Fp2-9D-n2g">
+                    <navigationItem key="navigationItem" title="My Memorable Places" id="Fp2-9D-n2g">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="MEI-8s-sfb">
                             <connections>
                                 <segue destination="BYZ-38-t0r" kind="show" id="s7a-WA-7gk"/>
@@ -43,10 +43,10 @@
             </objects>
             <point key="canvasLocation" x="1148" y="343"/>
         </scene>
-        <!--Map View Controller-->
+        <!--My Current Location-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController title="Map View Controller" id="BYZ-38-t0r" customClass="MapViewController" customModule="Memorable_Places" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="My Current Location" id="BYZ-38-t0r" customClass="MapViewController" customModule="Memorable_Places" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
