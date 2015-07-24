@@ -11,7 +11,7 @@ import UIKit
 // an array of dictionaries
 
 var placesOfInterest: [Dictionary<String,String>]!
-var selectedAddress = 0
+var selectedAddressIndex = -1
 
 class MapTableViewController: UITableViewController {
 
@@ -74,7 +74,9 @@ class MapTableViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
-
+        let poi = placesOfInterest[fromIndexPath.row]
+        placesOfInterest.removeAtIndex(fromIndexPath.row)
+        placesOfInterest.insert(poi, atIndex: toIndexPath.row)
     }
 
     override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
@@ -83,7 +85,7 @@ class MapTableViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, willSelectRowAtIndexPath indexPath: NSIndexPath) -> NSIndexPath? {
-        selectedAddress = indexPath.row
+        selectedAddressIndex = indexPath.row
         return indexPath
     }
 

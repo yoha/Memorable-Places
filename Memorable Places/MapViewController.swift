@@ -21,6 +21,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     @IBOutlet weak var mapView: MKMapView!
     
     // MARK: - UIViewController methods override
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -28,25 +29,18 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         self.locationDirector.delegate = self
         self.locationDirector.desiredAccuracy = kCLLocationAccuracyBest
         self.locationDirector.pausesLocationUpdatesAutomatically = true
-        if selectedAddress == 0 {
+        if selectedAddressIndex == -1 {
             self.locationDirector.requestWhenInUseAuthorization()
             self.locationDirector.startUpdatingLocation()
         }
         else {
-            let selectedAddressLatitude: CLLocationDegrees = Double(placesOfInterest[selectedAddress]["latitude"]!)!
-            let selectedAddressLongitude: CLLocationDegrees = NSString(string: placesOfInterest[selectedAddress]["longitude"]!).doubleValue
-            let latitudeDeltaZoomLevel: CLLocationDegrees = self.mapCoordinateZoomLevel
-            let longtitudeDeltaZoomLevel: CLLocationDegrees = self.mapCoordinateZoomLevel
-            let areaSpannedByMapRegion: MKCoordinateSpan = MKCoordinateSpanMake(latitudeDeltaZoomLevel, longtitudeDeltaZoomLevel)
-            let geographicalCoordiateStruct: CLLocationCoordinate2D = CLLocationCoordinate2DMake(selectedAddressLatitude, selectedAddressLongitude)
-            let mapRegionToDisplay: MKCoordinateRegion = MKCoordinateRegionMake(geographicalCoordiateStruct, areaSpannedByMapRegion)
-            self.mapView.setRegion(mapRegionToDisplay, animated: true)
+            let userLocationLatitude: CLLocationDegrees = Double(placesOfInterest[selectedAddressIndex]["latitude"]!)!
+            let userLocationLongitude: CLLocationDegrees = NSString(string: placesOfInterest[selectedAddressIndex]["longitude"]!).doubleValue
+            self.setupUserLocationOnMap(userLocationLatitude, longitude: userLocationLongitude)
             
-            let userLocationAnnotation = MKPointAnnotation()
-            userLocationAnnotation.coordinate = geographicalCoordiateStruct
-            userLocationAnnotation.title = placesOfInterest[selectedAddress]["locationMainTitle"]
-            userLocationAnnotation.subtitle = placesOfInterest[selectedAddress]["locationSubTitle"]
-            self.mapView.addAnnotation(userLocationAnnotation)
+            let userLocationAnnotationMainTitle: String = placesOfInterest[selectedAddressIndex]["locationMainTitle"]!
+            let userLocationAnnotationSubTitle: String = placesOfInterest[selectedAddressIndex]["locationSubTitle"]!
+            setupUserLocationAnnotation(userLocationLatitude, longitude: userLocationLongitude, annotationMainTitle: userLocationAnnotationMainTitle, annotationSubTitle: userLocationAnnotationSubTitle)
         }
         self.mapView.showsUserLocation = true
         
@@ -64,12 +58,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [AnyObject]) {
         let userLocation = locations[0] as! CLLocation
-        let userLocationCoordinate = CLLocationCoordinate2DMake(userLocation.coordinate.latitude, userLocation.coordinate.longitude)
-        let latitudeDelta: CLLocationDegrees = self.mapCoordinateZoomLevel
-        let longitudeDelta: CLLocationDegrees = self.mapCoordinateZoomLevel
-        let userLocationSpan = MKCoordinateSpanMake(latitudeDelta, longitudeDelta)
-        let userLocationRegion = MKCoordinateRegionMake(userLocationCoordinate, userLocationSpan)
-        self.mapView.setRegion(userLocationRegion, animated: true)
+        self.setupUserLocationOnMap(userLocation.coordinate.latitude, longitude: userLocation.coordinate.longitude)
     }
     
     // MARK: - Local methods
@@ -108,19 +97,36 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
                 }
                 
                 // assigning the location info into a var in table view controller
+                
                 placesOfInterest.append(["locationMainTitle":  "\(pointAnnotationMainTitle)", "locationSubTitle": "\(pointAnnotationSubTitle)", "latitude": "\(mapCoordinateFromViewCoordinate.latitude)", "longitude": "\(mapCoordinateFromViewCoordinate.longitude)"])
                 
                 // annotation
                 
-                let userLocationAnnotation = MKPointAnnotation()
-                userLocationAnnotation.coordinate = mapCoordinateFromViewCoordinate
-                userLocationAnnotation.title = pointAnnotationMainTitle
-                userLocationAnnotation.subtitle = pointAnnotationSubTitle
-                self.mapView.addAnnotation(userLocationAnnotation)
+                self.setupUserLocationAnnotation(mapCoordinateFromViewCoordinate.latitude, longitude: mapCoordinateFromViewCoordinate.longitude, annotationMainTitle: pointAnnotationMainTitle, annotationSubTitle: pointAnnotationSubTitle)
+                
             })
         }
         
     }
+    
+    func setupUserLocationOnMap(latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
+        let geographicalCoordinateStruct: CLLocationCoordinate2D = CLLocationCoordinate2DMake(latitude, longitude)
+        let latitudeDeltaZoomLevel: CLLocationDegrees = self.mapCoordinateZoomLevel
+        let longitudeDeltaZoomLevel: CLLocationDegrees = self.mapCoordinateZoomLevel
+        let areaSpannedByMapRegion: MKCoordinateSpan = MKCoordinateSpanMake(latitudeDeltaZoomLevel, longitudeDeltaZoomLevel)
+        let mapRegionToDisplay: MKCoordinateRegion = MKCoordinateRegionMake(geographicalCoordinateStruct, areaSpannedByMapRegion)
+        self.mapView.setRegion(mapRegionToDisplay, animated: true)
+    }
+    
+    func setupUserLocationAnnotation(latitude: CLLocationDegrees, longitude: CLLocationDegrees, annotationMainTitle: String, annotationSubTitle: String) {
+        let userLocationAnnotation = MKPointAnnotation()
+        userLocationAnnotation.coordinate = CLLocationCoordinate2DMake(latitude, longitude)
+        userLocationAnnotation.title = annotationMainTitle
+        userLocationAnnotation.subtitle = annotationSubTitle
+        self.mapView.addAnnotation(userLocationAnnotation)
+        self.mapView.selectAnnotation(userLocationAnnotation, animated: true)
+    }
+    
 
 }
 
