@@ -37,7 +37,7 @@
                     <navigationItem key="navigationItem" title="My Memorable Places" id="Fp2-9D-n2g">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="MEI-8s-sfb">
                             <connections>
-                                <segue destination="BYZ-38-t0r" kind="show" id="s7a-WA-7gk"/>
+                                <segue destination="BYZ-38-t0r" kind="show" identifier="newLocationSegue" id="s7a-WA-7gk"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -101,6 +101,6 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="pyD-Lx-FwI"/>
+        <segue reference="s7a-WA-7gk"/>
     </inferredMetricsTieBreakers>
 </document>

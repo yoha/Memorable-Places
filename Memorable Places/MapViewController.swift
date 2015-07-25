@@ -48,6 +48,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         longPressAction.minimumPressDuration = 1.0
         self.mapView.addGestureRecognizer(longPressAction)
     }
+    
+    override func viewWillDisappear(animated: Bool) {
+        NSUserDefaults.standardUserDefaults().setObject(placesOfInterest, forKey: "savedPlacesOfInterest")
+        NSUserDefaults.standardUserDefaults().synchronize()
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -82,17 +87,15 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
                     if poi.subThoroughfare != nil && poi.thoroughfare != nil {
                         subThoroughfare = poi.subThoroughfare
                         thoroughfare = poi.thoroughfare
-                    }
-                    else if poi.subThoroughfare != nil {
-                        subThoroughfare = poi.subThoroughfare
+                        pointAnnotationMainTitle = "\(subThoroughfare) \(thoroughfare)."
                     }
                     else if poi.thoroughfare != nil {
                         thoroughfare = poi.thoroughfare
+                        pointAnnotationMainTitle = "\(thoroughfare)."
                     }
                     else {
                         pointAnnotationMainTitle = "Added \(NSDate())."
                     }
-                    pointAnnotationMainTitle = "\(subThoroughfare) \(thoroughfare)."
                     pointAnnotationSubTitle = "\(poi.subAdministrativeArea), \(poi.administrativeArea) \(poi.postalCode). \(poi.country)."
                 }
                 
